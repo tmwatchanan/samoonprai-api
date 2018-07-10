@@ -1,5 +1,5 @@
 let { google } = require('googleapis')
-let serviceAccountKey = require('../samoonprai-thai-service-account-key.json')
+let serviceAccountKey = require('../secret/samoonprai-thai-service-account-key.json')
 let submissionSpreadsheetId = '1R8NU0NDyJFTjz7p18QWYh5pSbAkdJAAtArg_s-Tnaro'
 
 // configure a JWT auth client
