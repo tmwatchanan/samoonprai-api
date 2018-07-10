@@ -54,4 +54,7 @@ app.get('/', function (req, res) {
     })
 })
 
+
+app.get('/herb-image-url', submissionController.RetreiveHerbImageUrl)
+
 app.post('/herb-image-url', submissionController.SubmitHerbImageUrl)
