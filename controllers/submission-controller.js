@@ -1,6 +1,8 @@
 let { google } = require('googleapis')
-let serviceAccountKey = require('../secret/samoonprai-thai-service-account-key.json')
+let serviceAccountKey = require('../secrets/samoonprai-thai-service-account-key.json')
 let submissionSpreadsheetId = '1R8NU0NDyJFTjz7p18QWYh5pSbAkdJAAtArg_s-Tnaro'
+
+var moment = require('moment')
 
 // configure a JWT auth client
 let jwtClient = new google.auth.JWT(
@@ -24,7 +26,7 @@ exports.RetreiveHerbImageUrl = (req, res) => {
     })
 
     //Google Sheets API
-    let sheetName = 'Herb Image URL!A:B'
+    let sheetName = 'Herb Image URL!A:C'
     let sheets = google.sheets('v4')
     sheets.spreadsheets.values.get({
         auth: jwtClient,
@@ -38,7 +40,7 @@ exports.RetreiveHerbImageUrl = (req, res) => {
             // for (let row of response.data.values) {
             //     console.log('Title [%s]\t\tRating [%s]', row[0], row[1])
             // }
-            return res.status(200).json(response.data.values)
+            return res.status(200).json({ values: response.data.values })
         }
     })
 }
@@ -62,9 +64,13 @@ exports.SubmitHerbImageUrl = (req, res) => {
     //     ],
     //     // Additional rows ...
     // ]
-    var values = req.body.data
+    var structuredValues = []
+    for (let index = 0; index < req.body.values.length; index++) {
+        const element = req.body.values[index];
+        structuredValues.push([moment().utc().format(), element.url, element.label])
+    }
     var body = {
-        values: values
+        values: structuredValues
     }
     let range = 'Herb Image URL!A:A'
     const valueInputOption = 'RAW'
@@ -79,7 +85,7 @@ exports.SubmitHerbImageUrl = (req, res) => {
         if (err) {
             // Handle error.
             console.log(err)
-            return res.status(500).json({ error: 'Error appending values'})
+            return res.status(500).json({ error: 'Error appending values' })
         } else {
             // console.log('%d', result)
             return res.status(200).json('Successfully appending values.')
